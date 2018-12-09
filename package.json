@@ -1,6 +1,10 @@
 {
   "name": "scriptbox",
   "publisher": "cubicle6",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/calebmpeterson/scriptbox.git"
+  },
   "license": "ISC",
   "displayName": "scriptbox",
   "description": "Extend VS Code without the extension boilerplate",
