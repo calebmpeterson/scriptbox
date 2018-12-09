@@ -1,6 +1,7 @@
 {
   "name": "scriptbox",
   "publisher": "cubicle6",
+  "license": "ISC",
   "displayName": "scriptbox",
   "description": "Extend VS Code without the extension boilerplate",
   "version": "0.0.1",
