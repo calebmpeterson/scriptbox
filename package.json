@@ -8,7 +8,7 @@
   "license": "ISC",
   "displayName": "scriptbox",
   "description": "Extend VS Code without the extension boilerplate",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "engines": {
     "vscode": "^1.29.0"
   },
