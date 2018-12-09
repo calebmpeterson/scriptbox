@@ -20,6 +20,14 @@ None
 
 ## Release Notes
 
-### 1.0.0
+### 0.0.3
+
+Started keeping this Release Notes
+
+### 0.0.2
+
+Cleaned up the `README` and `package.json`
+
+### 0.0.1
 
 Initial release of ScriptBox
