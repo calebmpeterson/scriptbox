@@ -31,6 +31,11 @@ const loadScript = path => {
   }
 };
 
+const executeScript = module => {
+  const transformed = module(getCurrentTextSelection());
+  updateCurrentTextSelection(transformed);
+};
+
 const getCurrentTextSelection = () => {
   const editor = vscode.window.activeTextEditor;
 
@@ -56,8 +61,23 @@ const updateCurrentTextSelection = text => {
   });
 };
 
+const createLogger = (outputChannel, level) => (message?, ...args) => {
+  outputChannel.appendLine([level, message, ...args].join(" "));
+};
+
+const initializeConsole = () => {
+  const outputChannel = vscode.window.createOutputChannel("ScriptBox");
+
+  console.log = createLogger(outputChannel, "LOG  ");
+  console.info = createLogger(outputChannel, "INFO ");
+  console.warn = createLogger(outputChannel, "WARN ");
+  console.error = createLogger(outputChannel, "ERROR");
+
+  console.log("All console.* statements will appear here");
+};
+
 export function activate(context: vscode.ExtensionContext) {
-  console.log("ScriptBox is active");
+  initializeConsole();
 
   context.subscriptions.push(
     vscode.commands.registerCommand("extension.sayHello", () => {
@@ -84,8 +104,7 @@ export function activate(context: vscode.ExtensionContext) {
         if (pickedScript) {
           const pickedScriptPath = getScriptDir() + pickedScript.script;
           const module = loadScript(pickedScriptPath);
-          const transformed = module(getCurrentTextSelection());
-          updateCurrentTextSelection(transformed);
+          executeScript(module);
         }
       } catch (err) {
         vscode.window.showErrorMessage(err.message);

@@ -20,6 +20,10 @@ None
 
 ## Release Notes
 
+### 0.0.4
+
+Created an `OutputChannel` for all `console.*` statements within a ScriptBox script
+
 ### 0.0.3
 
 Started keeping this Release Notes
