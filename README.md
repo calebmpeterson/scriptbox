@@ -2,7 +2,9 @@
 
 Enable on-the-fly scripting of your VS Code environment.
 
-## Requirements
+![ScriptBox in action](documentation/demo.gif)
+
+## Usage
 
 1. Create a folder in your home directory named `.scriptbox`
 2. Create a JavaScript file in `.scriptbox` named `To Lower Case.js`
@@ -13,6 +15,11 @@ module.exports = function(str) {
   return str.toLowerCase();
 };
 ```
+
+4. Select text in another editor
+5. Use the **Run Script** command
+6. Select the **To Lower Case.js** option
+7. _Your text selection has been lower cased_
 
 ## Known Issues
 
