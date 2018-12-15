@@ -21,6 +21,10 @@ module.exports = function(str) {
 6. Select the **To Lower Case.js** option
 7. _Your text selection has been lower cased_
 
+## Can I Use NPM Packages In My Scripts?
+
+Yes, just use `npm`/`yarn`/etc... to add `packages.json` to your `~/.scriptbox/` directory, add the packages needed, and then `require('the-package')` within your scripts.
+
 ## Known Issues
 
 None
