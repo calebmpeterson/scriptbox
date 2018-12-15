@@ -7,6 +7,8 @@ import { sep } from "path";
 
 const getScriptDir = () => homedir() + `${sep}.scriptbox${sep}`;
 
+const isScript = filename => filename.endsWith(".js");
+
 const enumerateScripts = dir =>
   new Promise<string[]>((resolve, reject) =>
     readdir(dir, (err, files) => {
@@ -14,10 +16,10 @@ const enumerateScripts = dir =>
         reject(new Error(`${getScriptDir()} does not exist`));
       } else if (err) {
         reject(err);
-      } else if (files && files.length === 0) {
+      } else if (files && files.filter(isScript).length === 0) {
         reject(new Error(`${getScriptDir()} contains no scripts`));
       } else {
-        resolve(files);
+        resolve(files.filter(isScript));
       }
     })
   );
