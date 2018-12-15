@@ -5,6 +5,10 @@
     "type": "git",
     "url": "https://github.com/calebmpeterson/scriptbox.git"
   },
+  "bugs": {
+    "url": "https://github.com/calebmpeterson/scriptbox/issues",
+    "email": "caleb.peterson@cubicle6.com"
+  },
   "license": "ISC",
   "displayName": "scriptbox",
   "description": "Extend VS Code without the extension boilerplate",
