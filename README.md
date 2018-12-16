@@ -31,6 +31,10 @@ Yes, just use `npm`/`yarn`/etc... to add `packages.json` to your `~/.scriptbox/`
 
 None
 
+## Credits
+
+Logo based on [Hexagon by Chris Kerr from the Noun Project](https://thenounproject.com/term/hexagon/30707/)
+
 ## Release Notes
 
 ### 0.0.4
