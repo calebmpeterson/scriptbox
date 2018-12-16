@@ -1,4 +1,4 @@
-![ScriptBox](documentation/logo-128.png)
+![ScriptBox](documentation/logo-with-name.png)
 
 # ScriptBox
 
