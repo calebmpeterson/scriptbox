@@ -1,3 +1,5 @@
+![ScriptBox](documentation/logo-128.png)
+
 # ScriptBox
 
 Enable on-the-fly scripting of your VS Code environment.

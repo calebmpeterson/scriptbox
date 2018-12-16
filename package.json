@@ -10,8 +10,9 @@
     "email": "caleb.peterson@cubicle6.com"
   },
   "license": "ISC",
-  "displayName": "scriptbox",
+  "displayName": "ScriptBox",
   "description": "Extend VS Code without the extension boilerplate",
+  "icon": "documentation/logo.png",
   "version": "0.0.6",
   "engines": {
     "vscode": "^1.29.0"
@@ -22,6 +23,8 @@
   ],
   "keywords": [
     "javascript",
+    "scripting",
+    "extensions",
     "multi-root ready"
   ],
   "activationEvents": [
