@@ -25,7 +25,14 @@ module.exports = function(str) {
 
 ## Script API
 
-> `function (currentSelection)`
+Each script is expected to export a single function:
+
+```
+function (currentSelection) {
+  // manipulate and return the currentSelection string
+  // ...
+}
+```
 
 Each ScriptBox script is passed the current text selection as a `string`.
 
