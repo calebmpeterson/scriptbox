@@ -23,6 +23,18 @@ module.exports = function(str) {
 6. Select the **To Lower Case.js** option
 7. _Your text selection has been lower cased_
 
+## Script API
+
+> `function (currentSelection)`
+
+Each ScriptBox script is passed the current text selection as a `string`.
+
+The current text selection is **replaced** with the return value if a `string` is returned.
+
+The current text selection is **unchanged** if the return value is `undefined`, `null`, or `false`.
+
+The script function is executed with `this` bound to the [vscode namespace object](https://code.visualstudio.com/docs/extensionAPI/vscode-api).
+
 ## Can I Use NPM Packages In My Scripts?
 
 Yes, just use `npm`/`yarn`/etc... to add `packages.json` to your `~/.scriptbox/` directory, add the packages needed, and then `require('the-package')` within your scripts.
@@ -37,18 +49,4 @@ Logo based on [Hexagon by Chris Kerr from the Noun Project](https://thenounproje
 
 ## Release Notes
 
-### 0.0.4
-
-Created an `OutputChannel` for all `console.*` statements within a ScriptBox script
-
-### 0.0.3
-
-Started keeping this Release Notes
-
-### 0.0.2
-
-Cleaned up the `README` and `package.json`
-
-### 0.0.1
-
-Initial release of ScriptBox
+The [CHANGELOG](CHANGELOG.md) contains release notes for each release.

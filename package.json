@@ -11,7 +11,7 @@
   },
   "license": "ISC",
   "displayName": "ScriptBox",
-  "description": "Extend VS Code without the extension boilerplate",
+  "description": "Extend VS Code without dealing with extension boilerplate",
   "icon": "documentation/logo.png",
   "version": "0.0.9",
   "engines": {
@@ -50,7 +50,8 @@
     "watch": "tsc -watch -p ./",
     "postinstall": "node ./node_modules/vscode/bin/install",
     "test": "yarn run compile && node ./node_modules/vscode/bin/test",
-    "publish:patch": "vsce publish patch"
+    "publish:patch": "vsce publish patch",
+    "publish:minor": "vsce publish minor"
   },
   "devDependencies": {
     "typescript": "^3.1.4",

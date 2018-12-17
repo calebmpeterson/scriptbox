@@ -33,9 +33,16 @@ const loadScript = path => {
   }
 };
 
+const shouldUpdateCurrentTextSelection = transformed =>
+  transformed !== undefined && transformed !== null && transformed !== false;
+
 const executeScript = module => {
-  const transformed = module(getCurrentTextSelection());
-  updateCurrentTextSelection(transformed);
+  const context = vscode;
+  const args = [getCurrentTextSelection()];
+  const transformed = module.apply(context, args);
+  if (shouldUpdateCurrentTextSelection(transformed)) {
+    updateCurrentTextSelection(transformed);
+  }
 };
 
 const getCurrentTextSelection = () => {
@@ -75,7 +82,9 @@ const initializeConsole = () => {
   console.warn = createLogger(outputChannel, "WARN ");
   console.error = createLogger(outputChannel, "ERROR");
 
-  console.log("All console.* statements will appear here");
+  console.log(
+    "All console.* statements from ScriptBox scripts will appear here"
+  );
 };
 
 export function activate(context: vscode.ExtensionContext) {
