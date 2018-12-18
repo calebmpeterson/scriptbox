@@ -91,15 +91,6 @@ export function activate(context: vscode.ExtensionContext) {
   initializeConsole();
 
   context.subscriptions.push(
-    vscode.commands.registerCommand("extension.sayHello", () => {
-      // The code you place here will be executed every time your command is executed
-
-      // Display a message box to the user
-      vscode.window.showInformationMessage("Hello, World");
-    })
-  );
-
-  context.subscriptions.push(
     vscode.commands.registerCommand("extension.runScript", async () => {
       try {
         const scripts = await enumerateScripts(getScriptDir());
@@ -119,6 +110,25 @@ export function activate(context: vscode.ExtensionContext) {
         }
       } catch (err) {
         vscode.window.showErrorMessage(err.message);
+      }
+    })
+  );
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand("extension.runSelection", async () => {
+      try {
+        const selection = getCurrentTextSelection();
+        if (selection.trim() !== "") {
+          const result = eval(selection);
+          console.log(`Result`, result);
+        } else {
+          vscode.window.showWarningMessage(
+            "Unable to Run Selection because nothing is selected."
+          );
+        }
+      } catch (err) {
+        vscode.window.showErrorMessage(err.message);
+        console.error(err);
       }
     })
   );

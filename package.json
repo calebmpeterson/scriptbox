@@ -35,12 +35,12 @@
   "contributes": {
     "commands": [
       {
-        "command": "extension.sayHello",
-        "title": "Hello World"
-      },
-      {
         "command": "extension.runScript",
         "title": "Run Script"
+      },
+      {
+        "command": "extension.runSelection",
+        "title": "Run Selection"
       }
     ]
   },
