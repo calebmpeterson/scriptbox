@@ -28,8 +28,8 @@
     "multi-root ready"
   ],
   "activationEvents": [
-    "onCommand:extension.sayHello",
-    "onCommand:extension.runScript"
+    "onCommand:extension.runScript",
+    "onCommand:extension.runSelection"
   ],
   "main": "./out/extension",
   "contributes": {
