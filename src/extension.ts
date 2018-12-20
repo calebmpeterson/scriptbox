@@ -53,6 +53,9 @@ const getCurrentTextSelection = () => {
   }
 
   const selection = editor.selection;
+  if (selection.isEmpty) {
+    return editor.document.getText();
+  }
   return editor.document.getText(selection);
 };
 
@@ -65,9 +68,23 @@ const updateCurrentTextSelection = text => {
 
   const selection = editor.selection;
 
-  editor.edit(builder => {
-    builder.replace(selection, text);
-  });
+  if (selection.isEmpty) {
+    editor.edit(builder => {
+      const currentText = editor.document.getText();
+      const definiteLastCharacter = currentText.length;
+      const range = new vscode.Range(
+        0,
+        0,
+        editor.document.lineCount,
+        definiteLastCharacter
+      );
+      builder.replace(range, text);
+    });
+  } else {
+    editor.edit(builder => {
+      builder.replace(selection, text);
+    });
+  }
 };
 
 const createLogger = (outputChannel, level) => (message?, ...args) => {
@@ -118,16 +135,10 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand("extension.runSelection", async () => {
       try {
         const selection = getCurrentTextSelection();
-        if (selection.trim() !== "") {
-          const result = eval(selection);
-          console.log(`Result`, result);
-        } else {
-          vscode.window.showWarningMessage(
-            "Unable to Run Selection because nothing is selected."
-          );
-        }
+        const result = eval(selection);
+        console.log(`Result`, result);
       } catch (err) {
-        vscode.window.showErrorMessage(err.message);
+        vscode.window.showErrorMessage(`Evaluation error: ${err.message}`);
         console.error(err);
       }
     })

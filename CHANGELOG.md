@@ -2,6 +2,12 @@
 
 All notable changes to the "scriptbox" extension will be documented in this file.
 
+## [0.3.0]
+
+- Renamed **Run Selection** to **Eval Selection**
+- **Run Script** now operates on the full text of the active editor if nothing is selected
+- **Eval Selection** now evaluates the full text of the active editor if nothing is selected
+
 ## [0.2.1]
 
 - Fixed: extension didn't activate when using the `Run Selection` command
