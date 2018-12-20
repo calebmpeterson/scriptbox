@@ -4,7 +4,7 @@ All notable changes to the "scriptbox" extension will be documented in this file
 
 ## [0.2.1]
 
-- Fixed: extension didn't activate when using the `Run Selection`
+- Fixed: extension didn't activate when using the `Run Selection` command
 
 ## [0.2.0]
 
