@@ -2,8 +2,17 @@
 
 import * as vscode from "vscode";
 import { homedir } from "os";
-import { readdir } from "fs";
-import { sep } from "path";
+import { readdir, writeFileSync, mkdirSync } from "fs";
+import { sep, extname } from "path";
+
+const SCRIPT_TEMPLATE = `
+module.exports = function (selection) {
+  // selection is a string containing:
+  // 1. the current text selection
+  // 2. the entire contents of the active editor when nothing is selected
+  return selection;
+};
+`.trim();
 
 const getScriptDir = () => homedir() + `${sep}.scriptbox${sep}`;
 
@@ -12,7 +21,7 @@ const isScript = filename => filename.endsWith(".js");
 const enumerateScripts = dir =>
   new Promise<string[]>((resolve, reject) =>
     readdir(dir, (err, files) => {
-      if (err && err.code == "ENOENT") {
+      if (err && err.code === "ENOENT") {
         reject(new Error(`${getScriptDir()} does not exist`));
       } else if (err) {
         reject(err);
@@ -104,19 +113,94 @@ const initializeConsole = () => {
   );
 };
 
+type QuickPickScriptItem = {
+  script: string;
+  label: string;
+  desciption: string;
+};
+
+const createQuickPickItemsForScripts = (scripts): QuickPickScriptItem[] =>
+  scripts.map(script => ({
+    script,
+    label: script,
+    description: `Execute '${script}' on the selected text`
+  }));
+
+const openScriptForEditing = scriptPath => {
+  vscode.workspace.openTextDocument(scriptPath).then(
+    document =>
+      vscode.window.showTextDocument(
+        document,
+        vscode.window.activeTextEditor
+          ? vscode.window.activeTextEditor.viewColumn
+          : 1
+      ),
+    err => {
+      console.error(err);
+    }
+  );
+};
+
+const ensureScriptDir = scriptDir => {
+  try {
+    mkdirSync(scriptDir);
+  } catch (err) {
+    // Do nothing? The scriptDir must already exist
+  }
+};
+
 export function activate(context: vscode.ExtensionContext) {
   initializeConsole();
+
+  ensureScriptDir(getScriptDir());
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand("extension.createScript", async () => {
+      try {
+        vscode.window
+          .showInputBox({
+            placeHolder: "Script Name.js"
+          })
+          .then(scriptName => {
+            const newScriptPath =
+              getScriptDir() + scriptName + (extname(scriptName) || ".js");
+
+            writeFileSync(newScriptPath, SCRIPT_TEMPLATE, "UTF-8");
+
+            openScriptForEditing(newScriptPath);
+          });
+      } catch (err) {
+        vscode.window.showErrorMessage(err.message);
+      }
+    })
+  );
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand("extension.editScript", async () => {
+      try {
+        const scripts = await enumerateScripts(getScriptDir());
+
+        const scriptItems = createQuickPickItemsForScripts(scripts);
+
+        const pickedScript = await vscode.window.showQuickPick(scriptItems);
+
+        if (pickedScript) {
+          const pickedScriptPath = getScriptDir() + pickedScript.script;
+
+          openScriptForEditing(pickedScriptPath);
+        }
+      } catch (err) {
+        vscode.window.showErrorMessage(err.message);
+      }
+    })
+  );
 
   context.subscriptions.push(
     vscode.commands.registerCommand("extension.runScript", async () => {
       try {
         const scripts = await enumerateScripts(getScriptDir());
 
-        const scriptItems = scripts.map(script => ({
-          script,
-          label: script,
-          description: `Execute '${script}' on the selected text`
-        }));
+        const scriptItems = createQuickPickItemsForScripts(scripts);
 
         const pickedScript = await vscode.window.showQuickPick(scriptItems);
 

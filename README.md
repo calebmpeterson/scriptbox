@@ -6,12 +6,18 @@ Extend VS Code without creating extensions.
 
 ScriptBox enables you to extend VS Code using custom JavaScript code.
 
-To __programmatically modify text__, use [Run Script](#run-script)
+To **programmatically modify text**, use [Run Script](#run-script)
+
 - Run your predefined scripts on your current selection
 - Run your predefined scripts on the active editor
 
-To __evaluate a JavaScript snippet__, use [Run Selection](#run-selection)
-- Run the currently selected text as JavaScript 
+To **create a new script**, use **Create Script**.
+
+To **modify your existing scripts**, use **Edit Script**.
+
+To **evaluate a JavaScript snippet**, use [Run Selection](#run-selection)
+
+- Run the currently selected text as JavaScript
 - Run the active editor as JavaScript
 
 ## Run Script
@@ -22,21 +28,14 @@ Execute a predefined script on your current text selection.
 
 ### Usage
 
-1. Create a folder in your home directory named `.scriptbox`
-2. Create a JavaScript file in `.scriptbox` named `To Lower Case.js`
-3. Add the following
-
-```
-module.exports = function(str) {
-  return str.toLowerCase();
-};
-
-```
-
-4. Select text in another editor
-5. Use the **Run Script** command
-6. Select the **To Lower Case.js** option
-7. _Your text selection has been lower cased_
+1. Open the **Command Palette** (`Ctrl+P` / `Cmd+P`)
+2. Select **ScriptBox: Create Script**
+3. Give your script a name. e.g. `To Lower Case`
+4. Modify the new script to manipulate selected text as needed
+5. Select text in another editor
+6. Use the **Run Script** command
+7. Select the **To Lower Case.js** option
+8. _Your text selection has been lower cased_
 
 ### Script API
 
