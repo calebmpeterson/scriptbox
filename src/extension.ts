@@ -2,8 +2,18 @@
 
 import * as vscode from "vscode";
 import { homedir } from "os";
-import { readdir, writeFileSync, mkdirSync } from "fs";
+import { readdir, writeFileSync, mkdirSync, existsSync } from "fs";
 import { sep, extname } from "path";
+import * as vm from "vm";
+import * as _ from "lodash";
+
+const SCRATCH_FILENAME = ".scratch.js";
+
+const SCRATCH_TEMPLATE = `
+// JavaScript REPL
+// Lodash is already imported
+
+`.trim();
 
 const SCRIPT_TEMPLATE = `
 module.exports = function (selection) {
@@ -16,7 +26,8 @@ module.exports = function (selection) {
 
 const getScriptDir = () => homedir() + `${sep}.scriptbox${sep}`;
 
-const isScript = filename => filename.endsWith(".js");
+const isScript = filename =>
+  filename.endsWith(".js") && !filename.endsWith(SCRATCH_FILENAME);
 
 const enumerateScripts = dir =>
   new Promise<string[]>((resolve, reject) =>
@@ -116,7 +127,7 @@ const initializeConsole = () => {
 type QuickPickScriptItem = {
   script: string;
   label: string;
-  desciption: string;
+  description: string;
 };
 
 const createQuickPickItemsForScripts = (scripts): QuickPickScriptItem[] =>
@@ -148,6 +159,19 @@ const ensureScriptDir = scriptDir => {
     // Do nothing? The scriptDir must already exist
   }
 };
+
+const evaluate = _.debounce((code: string) => {
+  try {
+    const ctx = vm.createContext({
+      // This is where default imports for the scratch REPL go ...
+      _
+    });
+    const result = vm.runInContext(code, ctx);
+    console.log(`Result:`, result);
+  } catch (err) {
+    console.error(err);
+  }
+}, 500);
 
 export function activate(context: vscode.ExtensionContext) {
   initializeConsole();
@@ -226,6 +250,33 @@ export function activate(context: vscode.ExtensionContext) {
         console.error(err);
       }
     })
+  );
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand("extension.openScratch", async () => {
+      const filename = `${getScriptDir()}${SCRATCH_FILENAME}`;
+
+      if (!existsSync(filename)) {
+        writeFileSync(filename, SCRATCH_TEMPLATE, "UTF-8");
+      }
+
+      openScriptForEditing(filename);
+    })
+  );
+
+  context.subscriptions.push(
+    vscode.workspace.onDidChangeTextDocument(
+      (e: vscode.TextDocumentChangeEvent) => {
+        const scratchFilename = `${getScriptDir()}${SCRATCH_FILENAME}`;
+        const didScratchChange =
+          e.document.fileName.toLowerCase() === scratchFilename.toLowerCase();
+
+        if (didScratchChange) {
+          const code = e.document.getText();
+          evaluate(code);
+        }
+      }
+    )
   );
 }
 

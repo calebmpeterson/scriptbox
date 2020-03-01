@@ -31,7 +31,9 @@
     "onCommand:extension.createScript",
     "onCommand:extension.editScript",
     "onCommand:extension.runScript",
-    "onCommand:extension.runSelection"
+    "onCommand:extension.runSelection",
+    "onCommand:extension.openScratch",
+    "onLanguage:javascript"
   ],
   "main": "./out/extension",
   "contributes": {
@@ -51,6 +53,10 @@
       {
         "command": "extension.runSelection",
         "title": "ScriptBox: Eval Selection"
+      },
+      {
+        "command": "extension.openScratch",
+        "title": "ScriptBox: Open Scratch"
       }
     ]
   },
@@ -64,10 +70,13 @@
     "publish:minor": "vsce publish minor && git push"
   },
   "devDependencies": {
-    "typescript": "^3.1.4",
-    "vscode": "^1.1.25",
-    "tslint": "^5.8.0",
+    "@types/mocha": "^2.2.42",
     "@types/node": "^8.10.25",
-    "@types/mocha": "^2.2.42"
+    "tslint": "^5.8.0",
+    "typescript": "^3.1.4",
+    "vscode": "^1.1.25"
+  },
+  "dependencies": {
+    "lodash": "^4.17.15"
   }
 }
