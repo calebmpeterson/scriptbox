@@ -70,11 +70,11 @@
     "publish:minor": "vsce publish minor && git push"
   },
   "devDependencies": {
-    "@types/mocha": "^2.2.42",
-    "@types/node": "^8.10.25",
-    "tslint": "^5.8.0",
-    "typescript": "^3.1.4",
-    "vscode": "^1.1.25"
+    "@types/mocha": "^7.0.1",
+    "@types/node": "^13.7.7",
+    "tslint": "^6.0.0",
+    "typescript": "^3.8.3",
+    "vscode": "^1.1.36"
   },
   "dependencies": {
     "lodash": "^4.17.15"
