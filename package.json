@@ -13,7 +13,7 @@
   "displayName": "ScriptBox",
   "description": "Extend VS Code without dealing with extension boilerplate",
   "icon": "documentation/logo.png",
-  "version": "1.3.2",
+  "version": "2.0.0",
   "engines": {
     "vscode": "^1.29.0"
   },
