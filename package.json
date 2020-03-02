@@ -67,7 +67,8 @@
     "postinstall": "node ./node_modules/vscode/bin/install",
     "test": "yarn run compile && node ./node_modules/vscode/bin/test",
     "publish:patch": "vsce publish patch && git push",
-    "publish:minor": "vsce publish minor && git push"
+    "publish:minor": "vsce publish minor && git push",
+    "publish:major": "vsce publish major && git push"
   },
   "devDependencies": {
     "@types/mocha": "^7.0.1",
@@ -77,6 +78,7 @@
     "vscode": "^1.1.36"
   },
   "dependencies": {
-    "lodash": "^4.17.15"
+    "lodash": "^4.17.15",
+    "qim": "^0.0.52"
   }
 }

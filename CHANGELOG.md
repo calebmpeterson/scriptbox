@@ -2,6 +2,14 @@
 
 All notable changes to the "scriptbox" extension will be documented in this file.
 
+## [1.4.0]
+
+- The `JavaScript` scratch file is automatically evaluated on change and results are displayed in the **ScriptBox** Output panel.
+
+## [1.3.0]
+
+- Added a `JavaScript` scratch file (use the new **ScriptBox: Open Scratch** command) for use with **Eval Selection** command
+
 ## [0.3.0]
 
 - Renamed **Run Selection** to **Eval Selection**

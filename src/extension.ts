@@ -6,6 +6,7 @@ import { readdir, writeFileSync, mkdirSync, existsSync } from "fs";
 import { sep, extname } from "path";
 import * as vm from "vm";
 import * as _ from "lodash";
+import * as qim from "qim";
 
 const SCRATCH_FILENAME = ".scratch.js";
 
@@ -122,6 +123,8 @@ const initializeConsole = () => {
   console.log(
     "All console.* statements from ScriptBox scripts will appear here"
   );
+
+  return outputChannel;
 };
 
 type QuickPickScriptItem = {
@@ -160,21 +163,27 @@ const ensureScriptDir = scriptDir => {
   }
 };
 
-const evaluate = _.debounce((code: string) => {
-  try {
-    const ctx = vm.createContext({
-      // This is where default imports for the scratch REPL go ...
-      _
-    });
-    const result = vm.runInContext(code, ctx);
-    console.log(`Result:`, result);
-  } catch (err) {
-    console.error(err);
-  }
-}, 500);
+const evaluate = _.debounce(
+  (outputChannel: vscode.OutputChannel, code: string) => {
+    try {
+      const ctx = vm.createContext({
+        // This is where default imports for the scratch REPL go ...
+        _,
+        ...qim
+      });
+      const result = vm.runInContext(code, ctx);
+      outputChannel.clear();
+      outputChannel.show(true);
+      console.log(`Result:`, JSON.stringify(result, null, "  "));
+    } catch (err) {
+      console.error(err);
+    }
+  },
+  300
+);
 
 export function activate(context: vscode.ExtensionContext) {
-  initializeConsole();
+  const outputChannel = initializeConsole();
 
   ensureScriptDir(getScriptDir());
 
@@ -273,7 +282,7 @@ export function activate(context: vscode.ExtensionContext) {
 
         if (didScratchChange) {
           const code = e.document.getText();
-          evaluate(code);
+          evaluate(outputChannel, code);
         }
       }
     )
