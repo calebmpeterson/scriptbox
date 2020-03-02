@@ -174,7 +174,7 @@ const evaluate = _.debounce(
       const result = vm.runInContext(code, ctx);
       outputChannel.clear();
       outputChannel.show(true);
-      console.log(`Result:`, JSON.stringify(result, null, "  "));
+      console.log(JSON.stringify(result, null, "  "));
     } catch (err) {
       console.error(err);
     }
