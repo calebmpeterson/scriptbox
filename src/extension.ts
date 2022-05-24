@@ -167,19 +167,21 @@ const ensureScriptDir = (scriptDir: string) => {
   }
 };
 
-const evaluate = _.debounce(
+const getScratchFilename = () => `${getScriptDir()}${SCRATCH_FILENAME}`;
+
+const evaluateScratch = _.debounce(
   (outputChannel: vscode.OutputChannel, code: string) => {
     try {
       const ctx = vm.createContext({
         // This is where default imports for the scratch REPL go ...
         _,
       });
-      const result = vm.runInContext(code, ctx);
       outputChannel.clear();
+      const result = vm.runInContext(code, ctx);
       outputChannel.show(true);
       console.log(JSON.stringify(result, null, "  "));
     } catch (err) {
-      console.error(err);
+      outputChannel.appendLine(`Failed to execute script ${err.message}`);
     }
   },
   300
@@ -287,13 +289,13 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(
     vscode.workspace.onDidChangeTextDocument(
       (e: vscode.TextDocumentChangeEvent) => {
-        const scratchFilename = `${getScriptDir()}${SCRATCH_FILENAME}`;
+        const scratchFilename = getScratchFilename();
         const didScratchChange =
           e.document.fileName.toLowerCase() === scratchFilename.toLowerCase();
 
         if (didScratchChange) {
           const code = e.document.getText();
-          evaluate(outputChannel, code);
+          evaluateScratch(outputChannel, code);
         }
       }
     )
