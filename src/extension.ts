@@ -27,10 +27,10 @@ module.exports = function (selection) {
 
 const getScriptDir = () => homedir() + `${sep}.scriptbox${sep}`;
 
-const isScript = filename =>
+const isScript = (filename: string) =>
   filename.endsWith(".js") && !filename.endsWith(SCRATCH_FILENAME);
 
-const enumerateScripts = dir =>
+const enumerateScripts = (dir: string) =>
   new Promise<string[]>((resolve, reject) =>
     readdir(dir, (err, files) => {
       if (err && err.code === "ENOENT") {
@@ -45,7 +45,7 @@ const enumerateScripts = dir =>
     })
   );
 
-const loadScript = path => {
+const loadScript = (path: string) => {
   try {
     delete require.cache[require.resolve(path)];
     return require(path);
@@ -54,10 +54,11 @@ const loadScript = path => {
   }
 };
 
-const shouldUpdateCurrentTextSelection = transformed =>
-  transformed !== undefined && transformed !== null && transformed !== false;
+const shouldUpdateCurrentTextSelection = (
+  transformed: boolean | undefined | null
+) => transformed !== undefined && transformed !== null && transformed !== false;
 
-const executeScript = module => {
+const executeScript = (module: Function) => {
   const context = vscode;
   const args = [getCurrentTextSelection()];
   const transformed = module.apply(context, args);
@@ -80,7 +81,7 @@ const getCurrentTextSelection = () => {
   return editor.document.getText(selection);
 };
 
-const updateCurrentTextSelection = text => {
+const updateCurrentTextSelection = (text: string) => {
   const editor = vscode.window.activeTextEditor;
 
   if (!editor) {
@@ -90,7 +91,7 @@ const updateCurrentTextSelection = text => {
   const selection = editor.selection;
 
   if (selection.isEmpty) {
-    editor.edit(builder => {
+    editor.edit((builder) => {
       const currentText = editor.document.getText();
       const definiteLastCharacter = currentText.length;
       const range = new vscode.Range(
@@ -102,15 +103,17 @@ const updateCurrentTextSelection = text => {
       builder.replace(range, text);
     });
   } else {
-    editor.edit(builder => {
+    editor.edit((builder) => {
       builder.replace(selection, text);
     });
   }
 };
 
-const createLogger = (outputChannel, level) => (message?, ...args) => {
-  outputChannel.appendLine([level, message, ...args].join(" "));
-};
+const createLogger =
+  (outputChannel: vscode.OutputChannel, level: string) =>
+  (message?: string, ...args: any[]) => {
+    outputChannel.appendLine([level, message, ...args].join(" "));
+  };
 
 const initializeConsole = () => {
   const outputChannel = vscode.window.createOutputChannel("ScriptBox");
@@ -133,29 +136,31 @@ type QuickPickScriptItem = {
   description: string;
 };
 
-const createQuickPickItemsForScripts = (scripts): QuickPickScriptItem[] =>
-  scripts.map(script => ({
+const createQuickPickItemsForScripts = (
+  scripts: string[]
+): QuickPickScriptItem[] =>
+  scripts.map((script) => ({
     script,
     label: script,
-    description: `Execute '${script}' on the selected text`
+    description: `Execute '${script}' on the selected text`,
   }));
 
-const openScriptForEditing = scriptPath => {
+const openScriptForEditing = (scriptPath: string) => {
   vscode.workspace.openTextDocument(scriptPath).then(
-    document =>
+    (document) =>
       vscode.window.showTextDocument(
         document,
         vscode.window.activeTextEditor
           ? vscode.window.activeTextEditor.viewColumn
           : 1
       ),
-    err => {
+    (err) => {
       console.error(err);
     }
   );
 };
 
-const ensureScriptDir = scriptDir => {
+const ensureScriptDir = (scriptDir: string) => {
   try {
     mkdirSync(scriptDir);
   } catch (err) {
@@ -169,7 +174,7 @@ const evaluate = _.debounce(
       const ctx = vm.createContext({
         // This is where default imports for the scratch REPL go ...
         _,
-        ...qim
+        ...qim,
       });
       const result = vm.runInContext(code, ctx);
       outputChannel.clear();
@@ -188,13 +193,13 @@ export function activate(context: vscode.ExtensionContext) {
   ensureScriptDir(getScriptDir());
 
   context.subscriptions.push(
-    vscode.commands.registerCommand("extension.createScript", async () => {
+    vscode.commands.registerCommand("scriptbox.createScript", async () => {
       try {
         vscode.window
           .showInputBox({
-            placeHolder: "Script Name.js"
+            placeHolder: "Script Name.js",
           })
-          .then(scriptName => {
+          .then((scriptName) => {
             const newScriptPath =
               getScriptDir() + scriptName + (extname(scriptName) || ".js");
 
@@ -209,7 +214,7 @@ export function activate(context: vscode.ExtensionContext) {
   );
 
   context.subscriptions.push(
-    vscode.commands.registerCommand("extension.editScript", async () => {
+    vscode.commands.registerCommand("scriptbox.editScript", async () => {
       try {
         const scripts = await enumerateScripts(getScriptDir());
 
@@ -229,27 +234,35 @@ export function activate(context: vscode.ExtensionContext) {
   );
 
   context.subscriptions.push(
-    vscode.commands.registerCommand("extension.runScript", async () => {
-      try {
-        const scripts = await enumerateScripts(getScriptDir());
+    vscode.commands.registerCommand(
+      "scriptbox.runScript",
+      async (pickedScript?: string) => {
+        try {
+          if (!pickedScript) {
+            const scripts = await enumerateScripts(getScriptDir());
 
-        const scriptItems = createQuickPickItemsForScripts(scripts);
+            const scriptItems = createQuickPickItemsForScripts(scripts);
 
-        const pickedScript = await vscode.window.showQuickPick(scriptItems);
+            const pickedScriptItem = await vscode.window.showQuickPick(
+              scriptItems
+            );
+            pickedScript = pickedScriptItem?.script;
+          }
 
-        if (pickedScript) {
-          const pickedScriptPath = getScriptDir() + pickedScript.script;
-          const module = loadScript(pickedScriptPath);
-          executeScript(module);
+          if (pickedScript) {
+            const pickedScriptPath = getScriptDir() + pickedScript;
+            const module = loadScript(pickedScriptPath);
+            executeScript(module);
+          }
+        } catch (err) {
+          vscode.window.showErrorMessage(err.message);
         }
-      } catch (err) {
-        vscode.window.showErrorMessage(err.message);
       }
-    })
+    )
   );
 
   context.subscriptions.push(
-    vscode.commands.registerCommand("extension.runSelection", async () => {
+    vscode.commands.registerCommand("scriptbox.runSelection", async () => {
       try {
         const selection = getCurrentTextSelection();
         const result = eval(selection);
@@ -262,7 +275,7 @@ export function activate(context: vscode.ExtensionContext) {
   );
 
   context.subscriptions.push(
-    vscode.commands.registerCommand("extension.openScratch", async () => {
+    vscode.commands.registerCommand("scriptbox.openScratch", async () => {
       const filename = `${getScriptDir()}${SCRATCH_FILENAME}`;
 
       if (!existsSync(filename)) {

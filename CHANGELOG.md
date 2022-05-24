@@ -2,6 +2,10 @@
 
 All notable changes to the "scriptbox" extension will be documented in this file.
 
+## [3.0.0]
+
+- Changed all extension command prefixes to `scriptbox.`.
+
 ## [1.4.0]
 
 - The `JavaScript` scratch file is automatically evaluated on change and results are displayed in the **ScriptBox** Output panel.
