@@ -30,12 +30,12 @@ Execute a predefined script on your current text selection.
 
 1. Open the **Command Palette** (`Ctrl+P` / `Cmd+P`)
 2. Select **ScriptBox: Create Script**
-3. Give your script a name. e.g. `To Lower Case`
+3. Give your script a name. e.g. `To Upper Case`
 4. Modify the new script to manipulate selected text as needed
 5. Select text in another editor
 6. Use the **Run Script** command
-7. Select the **To Lower Case.js** option
-8. _Your text selection has been lower cased_
+7. Select the **\<your script name\>.js** option
+8. _Your text selection has been transformed_
 
 ### Script API
 
@@ -50,13 +50,37 @@ function (currentSelection) {
 
 Each ScriptBox script is passed the current text selection as a `string` (or the entire contents of the active editor if nothing is selected).
 
+#### Script return value
+
 The current text selection is **replaced** with the return value if a `string` is returned.
 
 The current text selection is **unchanged** if the return value is `undefined`, `null`, or `false`.
 
-The script function is executed with `this` bound to the [vscode namespace object](https://code.visualstudio.com/docs/extensionAPI/vscode-api).
+#### Using the `vscode` API
 
-### Can I Use NPM Packages In My Scripts?
+You can explicitly import the [`vscode` module](https://code.visualstudio.com/api/references/vscode-api) in your script:
+
+````js
+const vscode = require('vscode');
+
+module.exports = function () {
+  // Use the vscode API here...
+};
+
+
+### Binding a script to a keyboard shortcut
+
+In your keyboard shortcuts JSON file:
+
+```json
+{
+  "key": "cmd+u",
+  "command": "scriptbox.runScript",
+  "args": "To Upper Case.js"
+}
+````
+
+### Can I use NPM packages in my scripts?
 
 Yes, just use `npm`/`yarn`/etc... to add `packages.json` to your `~/.scriptbox/` directory, add the packages needed, and then `require('the-package')` within your scripts.
 

@@ -9,62 +9,66 @@
     "url": "https://github.com/calebmpeterson/scriptbox/issues",
     "email": "caleb.peterson@cubicle6.com"
   },
-  "license": "ISC",
+  "license": "MIT",
   "displayName": "ScriptBox",
   "description": "Extend VS Code without dealing with extension boilerplate",
   "icon": "documentation/logo.png",
-  "version": "2.0.1",
+  "version": "3.0.0",
   "engines": {
-    "vscode": "^1.29.0"
+    "vscode": "^1.66.0"
   },
   "categories": [
-    "Programming Languages",
     "Other"
   ],
   "keywords": [
-    "javascript",
+    "vscode",
+    "script",
     "scripting",
-    "extensions",
+    "javascript",
+    "hackable",
+    "automation",
+    "emacs",
     "multi-root ready"
   ],
   "activationEvents": [
-    "onCommand:extension.createScript",
-    "onCommand:extension.editScript",
-    "onCommand:extension.runScript",
-    "onCommand:extension.runSelection",
-    "onCommand:extension.openScratch",
+    "onCommand:scriptbox.createScript",
+    "onCommand:scriptbox.editScript",
+    "onCommand:scriptbox.runScript",
+    "onCommand:scriptbox.runSelection",
+    "onCommand:scriptbox.openScratch",
     "onLanguage:javascript"
   ],
   "main": "./out/extension",
   "contributes": {
     "commands": [
       {
-        "command": "extension.createScript",
+        "command": "scriptbox.createScript",
         "title": "ScriptBox: Create Script"
       },
       {
-        "command": "extension.editScript",
+        "command": "scriptbox.editScript",
         "title": "ScriptBox: Edit Script"
       },
       {
-        "command": "extension.runScript",
+        "command": "scriptbox.runScript",
         "title": "ScriptBox: Run Script"
       },
       {
-        "command": "extension.runSelection",
+        "command": "scriptbox.runSelection",
         "title": "ScriptBox: Eval Selection"
       },
       {
-        "command": "extension.openScratch",
+        "command": "scriptbox.openScratch",
         "title": "ScriptBox: Open Scratch"
       }
     ]
   },
   "scripts": {
     "vscode:prepublish": "yarn run compile",
+    "vscode:package": "yarn run precompile && yarn vsce package",
+    "precompile": "rm -rf ./out",
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
-    "postinstall": "node ./node_modules/vscode/bin/install",
     "test": "yarn run compile && node ./node_modules/vscode/bin/test",
     "publish:patch": "vsce publish patch && git push",
     "publish:minor": "vsce publish minor && git push",
@@ -73,12 +77,13 @@
   "devDependencies": {
     "@types/mocha": "^7.0.1",
     "@types/node": "^13.7.7",
+    "@types/vscode": "^1.53.0",
     "tslint": "^6.0.0",
-    "typescript": "^3.8.3",
-    "vscode": "^1.1.36"
+    "typescript": "^4.1.3",
+    "vsce": "^2.8.0",
+    "vscode-test": "^1.5.0"
   },
   "dependencies": {
-    "lodash": "^4.17.19",
-    "qim": "^0.0.52"
+    "lodash": "^4.17.21"
   }
 }
