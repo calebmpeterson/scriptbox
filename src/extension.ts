@@ -26,6 +26,9 @@ module.exports = function (selection) {
 
 const getScriptDir = () => homedir() + `${sep}.scriptbox${sep}`;
 
+// Load ~/.scriptbox/.env file
+require("dotenv").config({ path: getScriptDir() + ".env" });
+
 const isScript = (filename: string) =>
   filename.endsWith(".js") && !filename.endsWith(SCRATCH_FILENAME);
 
@@ -53,16 +56,43 @@ const loadScript = (path: string) => {
   }
 };
 
+const isPromise = (value: any): value is Promise<unknown> =>
+  typeof value === "object" &&
+  "then" in value &&
+  typeof value.then === "function";
+
 const shouldUpdateCurrentTextSelection = (
-  transformed: boolean | undefined | null
+  transformed: unknown | boolean | undefined | null
 ) => transformed !== undefined && transformed !== null && transformed !== false;
 
 const executeScript = (module: Function) => {
   const context = vscode;
   const args = [getCurrentTextSelection()];
   const transformed = module.apply(context, args);
-  if (shouldUpdateCurrentTextSelection(transformed)) {
-    updateCurrentTextSelection(transformed);
+
+  if (isPromise(transformed)) {
+    vscode.window.withProgress(
+      {
+        location: vscode.ProgressLocation.Notification,
+        title: `Running script`,
+        cancellable: false,
+      },
+      async () => {
+        try {
+          const result = await transformed;
+
+          if (shouldUpdateCurrentTextSelection(result) && _.isString(result)) {
+            updateCurrentTextSelection(result);
+          }
+        } catch (e) {
+          vscode.window.showErrorMessage(e.message);
+        }
+      }
+    );
+  } else {
+    if (shouldUpdateCurrentTextSelection(transformed)) {
+      updateCurrentTextSelection(transformed);
+    }
   }
 };
 
