@@ -6,6 +6,7 @@ import { readdir, writeFileSync, mkdirSync, existsSync } from "fs";
 import { sep, extname } from "path";
 import * as vm from "vm";
 import * as _ from "lodash";
+import { ScriptFunction, ScriptFunctionResult } from "./types";
 
 const SCRATCH_FILENAME = ".scratch.js";
 
@@ -16,7 +17,8 @@ const SCRATCH_TEMPLATE = `
 `.trim();
 
 const SCRIPT_TEMPLATE = `
-module.exports = function (selection) {
+// This function can be async; a busy indicator will show in VS Code
+module.exports = (selection) => {
   // selection is a string containing:
   // 1. the current text selection
   // 2. the entire contents of the active editor when nothing is selected
@@ -65,10 +67,11 @@ const shouldUpdateCurrentTextSelection = (
   transformed: unknown | boolean | undefined | null
 ) => transformed !== undefined && transformed !== null && transformed !== false;
 
-const executeScript = (module: Function) => {
+const executeScript = (module: ScriptFunction) => {
   const context = vscode;
-  const args = [getCurrentTextSelection()];
-  const transformed = module.apply(context, args);
+  const targetEditor = vscode.window.activeTextEditor;
+  const args = [getCurrentTextSelection(targetEditor)];
+  const transformed: ScriptFunctionResult = module.apply(context, args);
 
   if (isPromise(transformed)) {
     vscode.window.withProgress(
@@ -82,7 +85,7 @@ const executeScript = (module: Function) => {
           const result = await transformed;
 
           if (shouldUpdateCurrentTextSelection(result) && _.isString(result)) {
-            updateCurrentTextSelection(result);
+            updateCurrentTextSelection(result, targetEditor);
           }
         } catch (e) {
           vscode.window.showErrorMessage(e.message);
@@ -91,14 +94,12 @@ const executeScript = (module: Function) => {
     );
   } else {
     if (shouldUpdateCurrentTextSelection(transformed)) {
-      updateCurrentTextSelection(transformed);
+      updateCurrentTextSelection(transformed, targetEditor);
     }
   }
 };
 
-const getCurrentTextSelection = () => {
-  const editor = vscode.window.activeTextEditor;
-
+const getCurrentTextSelection = (editor: vscode.TextEditor | undefined) => {
   if (!editor) {
     return;
   }
@@ -107,12 +108,14 @@ const getCurrentTextSelection = () => {
   if (selection.isEmpty) {
     return editor.document.getText();
   }
+
   return editor.document.getText(selection);
 };
 
-const updateCurrentTextSelection = (text: string) => {
-  const editor = vscode.window.activeTextEditor;
-
+const updateCurrentTextSelection = (
+  text: string,
+  editor: vscode.TextEditor | undefined
+) => {
   if (!editor) {
     return;
   }
@@ -294,7 +297,9 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(
     vscode.commands.registerCommand("scriptbox.runSelection", async () => {
       try {
-        const selection = getCurrentTextSelection();
+        const selection = getCurrentTextSelection(
+          vscode.window.activeTextEditor
+        );
         const result = eval(selection);
         console.log(`Result`, result);
       } catch (err) {
