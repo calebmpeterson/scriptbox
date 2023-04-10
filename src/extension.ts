@@ -4,12 +4,8 @@ import * as vscode from "vscode";
 import { writeFileSync, existsSync } from "fs";
 import { extname } from "path";
 import * as _ from "lodash";
-import { ScriptFunction, ScriptFunctionResult } from "./types";
-import { isPromise } from "./utils/isPromise";
 import { getScriptDir } from "./utils/getScriptDir";
 import { SCRATCH_FILENAME } from "./constants";
-import { updateCurrentTextSelection } from "./utils/updateCurrentTextSelection";
-import { shouldUpdateCurrentTextSelection } from "./utils/shouldUpdateCurrentTextSelection";
 import { getCurrentTextSelection } from "./utils/getCurrentTextSelection";
 import { ensureScriptDir } from "./utils/ensureScriptDir";
 import { getScratchFilename } from "./utils/getScratchFilename";
@@ -20,50 +16,11 @@ import { openScriptForEditing } from "./utils/openScriptForEditing";
 import { initializeConsole } from "./utils/initializeConsole";
 import { SCRIPT_TEMPLATE } from "./templates/script";
 import { SCRATCH_TEMPLATE } from "./templates/scratch";
+import { executeScript } from "./utils/executeScript";
+import { loadScript } from "./utils/loadScript";
 
 // Load ~/.scriptbox/.env file
 require("dotenv").config({ path: getScriptDir() + ".env" });
-
-const loadScript = (path: string) => {
-  try {
-    delete require.cache[require.resolve(path)];
-    return require(path);
-  } catch (err) {
-    throw new Error(`Error loading '${path}': ${err.message}`);
-  }
-};
-
-const executeScript = (module: ScriptFunction) => {
-  const context = vscode;
-  const targetEditor = vscode.window.activeTextEditor;
-  const args = [getCurrentTextSelection(targetEditor)];
-  const transformed: ScriptFunctionResult = module.apply(context, args);
-
-  if (isPromise(transformed)) {
-    vscode.window.withProgress(
-      {
-        location: vscode.ProgressLocation.Notification,
-        title: `Running script`,
-        cancellable: false,
-      },
-      async () => {
-        try {
-          const result = await transformed;
-
-          if (shouldUpdateCurrentTextSelection(result) && _.isString(result)) {
-            updateCurrentTextSelection(result, targetEditor);
-          }
-        } catch (e) {
-          vscode.window.showErrorMessage(e.message);
-        }
-      }
-    );
-  } else {
-    if (shouldUpdateCurrentTextSelection(transformed)) {
-      updateCurrentTextSelection(transformed, targetEditor);
-    }
-  }
-};
 
 export function activate(context: vscode.ExtensionContext) {
   const outputChannel = initializeConsole();
@@ -130,7 +87,7 @@ export function activate(context: vscode.ExtensionContext) {
           if (pickedScript) {
             const pickedScriptPath = getScriptDir() + pickedScript;
             const module = loadScript(pickedScriptPath);
-            executeScript(module);
+            executeScript(module, pickedScript);
           }
         } catch (err) {
           vscode.window.showErrorMessage(err.message);
@@ -166,6 +123,7 @@ export function activate(context: vscode.ExtensionContext) {
     })
   );
 
+  // Re-evaluate scratch file on change
   context.subscriptions.push(
     vscode.workspace.onDidChangeTextDocument(
       (e: vscode.TextDocumentChangeEvent) => {
