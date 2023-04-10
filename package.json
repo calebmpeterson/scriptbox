@@ -31,11 +31,6 @@
     "multi-root ready"
   ],
   "activationEvents": [
-    "onCommand:scriptbox.createScript",
-    "onCommand:scriptbox.editScript",
-    "onCommand:scriptbox.runScript",
-    "onCommand:scriptbox.runSelection",
-    "onCommand:scriptbox.openScratch",
     "onLanguage:javascript"
   ],
   "main": "./out/extension",
@@ -75,6 +70,7 @@
     "publish:major": "vsce publish major && git push"
   },
   "devDependencies": {
+    "@types/dotenv": "^8.2.0",
     "@types/lodash": "^4.14.191",
     "@types/mocha": "^7.0.1",
     "@types/node": "^13.7.7",

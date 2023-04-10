@@ -4,6 +4,7 @@ import * as vscode from "vscode";
 import { writeFileSync, existsSync } from "fs";
 import { extname } from "path";
 import * as _ from "lodash";
+import * as dotenv from "dotenv";
 import { getScriptDir } from "./utils/getScriptDir";
 import { SCRATCH_FILENAME } from "./constants";
 import { getCurrentTextSelection } from "./utils/getCurrentTextSelection";
@@ -20,7 +21,7 @@ import { executeScript } from "./utils/executeScript";
 import { loadScript } from "./utils/loadScript";
 
 // Load ~/.scriptbox/.env file
-require("dotenv").config({ path: getScriptDir() + ".env" });
+dotenv.config({ path: getScriptDir() + ".env" });
 
 export function activate(context: vscode.ExtensionContext) {
   const outputChannel = initializeConsole();
