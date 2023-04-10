@@ -7,3 +7,9 @@ export type ScriptFunctionResult =
 export type ScriptFunction = (
   selectionOrActiveEditorContent: string
 ) => ScriptFunctionResult;
+
+export type QuickPickScriptItem = {
+  script: string;
+  label: string;
+  description: string;
+};
