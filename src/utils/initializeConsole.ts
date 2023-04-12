@@ -9,14 +9,5 @@ const createLogger =
 export const initializeConsole = () => {
   const outputChannel = vscode.window.createOutputChannel("ScriptBox");
 
-  console.log = createLogger(outputChannel, "LOG  ");
-  console.info = createLogger(outputChannel, "INFO ");
-  console.warn = createLogger(outputChannel, "WARN ");
-  console.error = createLogger(outputChannel, "ERROR");
-
-  console.log(
-    "All console.* statements from ScriptBox scripts will appear here"
-  );
-
   return outputChannel;
 };

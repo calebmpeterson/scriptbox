@@ -23,7 +23,7 @@ export const executeScript = (module: ScriptFunction, pickedScript: string) => {
         try {
           const result = await transformed;
 
-          if (shouldUpdateCurrentTextSelection(result) && _.isString(result)) {
+          if (shouldUpdateCurrentTextSelection(result)) {
             updateCurrentTextSelection(result, targetEditor);
           }
         } catch (e) {

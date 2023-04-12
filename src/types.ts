@@ -1,4 +1,15 @@
-export type ScriptFunctionReturnType = string | undefined | null;
+export type ScriptFunctionFileIntent = {
+  filename: string;
+  content: string;
+};
+
+export type ScriptFunctionFileIntents = ScriptFunctionFileIntent[];
+
+export type ScriptFunctionReturnType =
+  | ScriptFunctionFileIntents
+  | string
+  | undefined
+  | null;
 
 export type ScriptFunctionResult =
   | ScriptFunctionReturnType
