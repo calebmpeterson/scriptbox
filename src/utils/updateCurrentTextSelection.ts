@@ -6,15 +6,14 @@ import { ScriptFunctionFileIntents } from "../types";
 import { isScriptFunctionFileIntent } from "./isScriptFunctionFileIntent";
 
 // TODO: rename to processScriptFunctionResults
-export const updateCurrentTextSelection = (
+export const updateSelection = async (
   update: string | ScriptFunctionFileIntents,
-  editor: vscode.TextEditor | undefined
+  editor: vscode.TextEditor | undefined,
+  selection: vscode.Selection
 ) => {
   if (!editor) {
     return;
   }
-
-  const selection = editor.selection;
 
   if (isArray(update)) {
     update.forEach((item) => {
@@ -30,7 +29,7 @@ export const updateCurrentTextSelection = (
   } else {
     // Replace the entire document's content
     if (selection.isEmpty) {
-      editor.edit((builder) => {
+      await editor.edit((builder) => {
         const currentText = editor.document.getText();
         const definiteLastCharacter = currentText.length;
         const range = new vscode.Range(
@@ -44,7 +43,7 @@ export const updateCurrentTextSelection = (
     }
     // Replace only the selection
     else {
-      editor.edit((builder) => {
+      await editor.edit((builder) => {
         builder.replace(selection, update);
       });
     }

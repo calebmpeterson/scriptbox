@@ -1,3 +1,5 @@
+import { Selection } from "vscode";
+
 export type ScriptFunctionFileIntent = {
   filename: string;
   content: string;
@@ -24,3 +26,6 @@ export type QuickPickScriptItem = {
   label: string;
   description: string;
 };
+
+export type ExecutionTarget = { content: string; selection: Selection };
+export type ExecutionTargets = ExecutionTarget[];

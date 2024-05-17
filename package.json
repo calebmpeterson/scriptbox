@@ -59,6 +59,7 @@
     ]
   },
   "scripts": {
+    "typecheck": "tsc --noEmit -p ./",
     "vscode:prepublish": "yarn run compile",
     "vscode:package": "yarn run precompile && yarn vsce package",
     "precompile": "rm -rf ./out",

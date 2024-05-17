@@ -99,11 +99,11 @@ export function activate(context: vscode.ExtensionContext) {
 
   context.subscriptions.push(
     vscode.commands.registerCommand("scriptbox.runSelection", async () => {
+      const editor = vscode.window.activeTextEditor;
+
       try {
-        const selection = getCurrentTextSelection(
-          vscode.window.activeTextEditor
-        );
-        const result = eval(selection);
+        const [selection] = getCurrentTextSelection(editor);
+        const result = eval(selection.content);
         console.log(`Result`, result);
       } catch (err) {
         vscode.window.showErrorMessage(`Evaluation error: ${err.message}`);
